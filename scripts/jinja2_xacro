@@ -1,0 +1,4 @@
+#!/bin/bash
+set -eu
+xacro="$("$(dirname "$0")/jinja2" "$1" --globals 'vars(__builtins__)' --globals 'vars(__import__("math"))')"
+rosrun xacro xacro <(echo "$xacro") "${@:2}"

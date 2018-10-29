@@ -1,0 +1,39 @@
+#!/usr/bin/python
+from __future__ import print_function
+
+import argparse
+import os
+
+import jinja2
+
+
+def _parse_args(argv=None):
+    p = argparse.ArgumentParser()
+    p.add_argument('template', nargs='?')
+    p.add_argument('--globals', action='append', default=[])
+    return p.parse_args(argv)
+
+
+def _read_text(path, encoding='utf-8'):
+    with open(path, 'rb') as fp:
+        return fp.read().decode(encoding)
+
+
+def _main():
+    args = _parse_args()
+
+    env = jinja2.Environment(
+        loader=jinja2.FileSystemLoader(
+            os.path.dirname(args.template)
+            if args.template is not None else '.',
+        ),
+    )
+
+    for expr in args.globals:
+        env.globals.update(dict(eval(expr)))
+
+    print(env.from_string(_read_text(args.template)).render())
+
+
+if __name__ == '__main__':
+    _main()
